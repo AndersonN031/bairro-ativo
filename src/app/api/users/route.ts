@@ -3,7 +3,8 @@ import { NextRequest, NextResponse } from "next/server"
 
 export async function GET(req: NextRequest) {
     try {
-        return NextResponse.json({ products: [] })
+        const users = await db.usuario.findMany()
+        return NextResponse.json({ users })
     } catch (error) {
         return NextResponse.json({
             message: "Error ao buscar usuários."
