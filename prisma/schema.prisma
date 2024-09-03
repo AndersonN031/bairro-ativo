@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL")
+}
+
+model Usuario {
+  id            Int            @id @default(autoincrement())
+  nome          String         @db.VarChar(100)
+  email         String         @unique @db.VarChar(100)
+  senha_hash    String         @db.VarChar(255)
+  papel_id      Int
+  data_criacao  DateTime       @default(now()) @db.Timestamp(6)
+  representante Representante?
+  tickets       Ticket[]
+  papel         Papel          @relation(fields: [papel_id], references: [id])
+}
+
+model Papel {
+  id       Int       @id @default(autoincrement())
+  nome     String?   @db.VarChar(50)
+  usuarios Usuario[]
+}
+
+model Ticket {
+  id               Int            @id @default(autoincrement())
+  titulo           String         @db.VarChar(255)
+  descricao        String
+  categoria        String         @db.VarChar(50)
+  localizacao      String?        @db.VarChar(255)
+  usuario_id       Int
+  data_criacao     DateTime       @default(now()) @db.Timestamp(6)
+  status           String         @default("Aberto") @db.VarChar(50)
+  representante_id Int?
+  usuario          Usuario        @relation(fields: [usuario_id], references: [id])
+  Representante    Representante? @relation(fields: [representante_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "representante_id")
+}
+
+model Categoria {
+  id   Int    @id @default(autoincrement())
+  nome String @unique @db.VarChar(50)
+}
+
+model Representante {
+  id          Int       @id @default(autoincrement())
+  usuario_id  Int       @unique
+  bairro      String    @db.VarChar(100)
+  data_inicio DateTime  @default(now()) @db.Timestamp(6)
+  data_fim    DateTime? @db.Timestamp(6)
+  usuario     Usuario   @relation(fields: [usuario_id], references: [id])
+  Ticket      Ticket[]
+}
