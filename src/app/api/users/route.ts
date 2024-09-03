@@ -2,8 +2,14 @@ import prisma from "@/src/lib/db"
 import { NextRequest, NextResponse } from "next/server"
 
 export async function GET(req: NextRequest) {
-    const usuarios = await prisma.usuario.findMany();
-    return Response.json(usuarios)
+    try {
+        const usuarios = await prisma.usuario.findMany();
+        return NextResponse.json(usuarios)
+    } catch (error) {
+        return NextResponse.json({
+            message: "Error ao buscar usuários."
+        })
+    }
 }
 
 export async function POST(req: Request) {
@@ -17,15 +23,14 @@ export async function POST(req: Request) {
                 papel_id,
             }
         });
-        return Response.json({ message: "Ok", user })
+        return NextResponse.json({ message: "Usuário criado com sucesso!", user })
 
     } catch (error) {
         return NextResponse.json({
-            message: "Error", error
-        },
-            {
-                status: 500,
-            }
-        )
+            message: "Error creating user",
+            error,
+        }, {
+            status: 500,
+        });
     }
 }
