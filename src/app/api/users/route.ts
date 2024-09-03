@@ -1,9 +1,10 @@
-import prisma from "@/src/lib/db"
+
 import { NextRequest, NextResponse } from "next/server"
+import { db } from "@/src/lib/db";
 
 export async function GET() {
     try {
-        const usuarios = await prisma.usuario.findMany();
+        const usuarios = await db.usuario.findMany();
         return NextResponse.json(usuarios)
     } catch (error) {
         return NextResponse.json({
@@ -15,7 +16,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
     const { nome, email, senha_hash, papel_id } = await req.json();
     try {
-        const user = await prisma.usuario.create({
+        const user = await db.usuario.create({
             data: {
                 nome,
                 email,

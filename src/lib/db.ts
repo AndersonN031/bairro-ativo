@@ -1,24 +1,10 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client'
 
-// Singleton pattern to ensure only one instance of PrismaClient is created
-const prismaClientSingleton = () => {
-  return new PrismaClient({
-    log: ['query', 'info', 'warn', 'error'],
-  });
-};
-
-// Declare global variable to store PrismaClient instance
-declare const global: {
-  prisma?: PrismaClient;
-};
-
-// Export a single instance of PrismaClient for serverless environments
-const prisma =
-  global.prisma ||
-  prismaClientSingleton();
-
-if (process.env.NODE_ENV !== 'production') {
-  global.prisma = prisma;
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined
 }
 
-export default prisma;
+const prisma = globalForPrisma.prisma ?? new PrismaClient()
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+
+export const db = prisma;
