@@ -1,7 +1,7 @@
 import prisma from "@/src/lib/db"
 import { NextRequest, NextResponse } from "next/server"
 
-export async function GET(req: NextRequest) {
+export async function GET() {
     try {
         const usuarios = await prisma.usuario.findMany();
         return NextResponse.json(usuarios)
@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
     }
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
     const { nome, email, senha_hash, papel_id } = await req.json();
     try {
         const user = await prisma.usuario.create({
