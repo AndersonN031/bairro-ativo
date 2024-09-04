@@ -12,9 +12,9 @@ model Usuario {
   id            Int            @id @default(autoincrement())
   nome          String         @db.VarChar(100)
   email         String         @unique @db.VarChar(100)
-  senha_hash    String         @db.VarChar(255)
   papel_id      Int
   data_criacao  DateTime       @default(now()) @db.Timestamp(6)
+  password      String         @db.VarChar(255)
   representante Representante?
   tickets       Ticket[]
   papel         Papel          @relation(fields: [papel_id], references: [id])
