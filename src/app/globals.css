@@ -205,3 +205,35 @@ form p .link-login {
   text-decoration: none;
   font-weight: 500;
 }
+
+.button-signout {
+  margin-top: 20px;
+  background-color: #c54b4b;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 16px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.button-signout:hover {
+  transform: scale(1.05);
+}
+
+.button-signin {
+  margin-top: 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 16px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: .2s;
+  text-decoration: none;
+  transition: .2s;
+}

@@ -2,22 +2,18 @@
 import React from 'react';
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
-import axios from 'axios';
 import { Button, TextField, Typography } from '@mui/material';
 import Link from 'next/link';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 interface FormValues {
-    nome: string;
     email: string;
     password: string;
 }
 
-// Definindo o esquema de validação com Yup
+
 const validationSchema = Yup.object({
-    nome: Yup.string()
-        .min(1, 'Nome do usuário é obrigatório!')
-        .max(255, 'Nome do usuário é muito longo!')
-        .required('Nome do usuário é obrigatório!'),
     email: Yup.string()
         .email('Email inválido!')
         .required('Email do usuário é obrigatório!'),
@@ -26,43 +22,37 @@ const validationSchema = Yup.object({
         .required('Senha é obrigatória!')
 });
 
-const RegisterForm = () => {
+const LoginForm = () => {
+    const router = useRouter()
     const handleSubmit = async (
         values: FormValues,
         { setSubmitting, setStatus }: FormikHelpers<FormValues>
     ) => {
-        try {
-            await axios.post('/api/users', values);
-            alert('Usuário criado com sucesso!');
-        } catch (error) {
-            console.error('Error creating user:', error);
-            setStatus('Erro ao criar usuário');
-        } finally {
-            setSubmitting(false);
+        const result = await signIn('credentials', {
+            redirect: false,
+            email: values.email,
+            password: values.password
+        })
+
+        if (result?.error) {
+            console.error('Erro ao fazer login:', result.error);
+            setStatus(result.error);
+        } else {
+            // alert('Login efetuado com sucesso!');
+            router.refresh();
+            router.push('/admin')
         }
     };
 
     return (
         <Formik
-            initialValues={{ nome: '', email: '', password: '' }}
+            initialValues={{ email: '', password: '' }}
             validationSchema={validationSchema}
             onSubmit={handleSubmit}
         >
-            {({ isSubmitting }) => (
+            {({ isSubmitting, status }) => (
                 <Form>
-                    <Typography variant="h4">Registrar Usuário</Typography>
-
-                    <Field
-                        as={TextField}
-                        name="nome"
-                        label="Nome completo"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        helperText={<ErrorMessage name="nome" />}
-                        placeholder="Ex: João Batista"
-
-                    />
+                    <Typography variant="h4">Entrar</Typography>
 
                     <Field
                         as={TextField}
@@ -83,7 +73,6 @@ const RegisterForm = () => {
                         margin="normal"
                         type="password"
                         helperText={<ErrorMessage name="password" />}
-
                     />
 
                     <Button
@@ -92,16 +81,16 @@ const RegisterForm = () => {
                         color="primary"
                         disabled={isSubmitting}
                     >
-                        {isSubmitting ? 'Enviando...' : 'Registrar'}
+                        {isSubmitting ? 'Entrando...' : 'Entrar'}
                     </Button>
 
-                    <ErrorMessage name="submit" component="div" />
+                    {status && <div style={{ color: 'red' }}>{status}</div>}
 
-                    <p>Se você já tem uma conta, por favor <Link href='/login' className="link-login">Entre</Link>.</p>
+                    <p>Não tem uma conta? <Link href='/register' className="link-register">Registre-se</Link>.</p>
                 </Form>
             )}
         </Formik>
     );
 };
 
-export default RegisterForm;
+export default LoginForm;
